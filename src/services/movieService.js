@@ -6,6 +6,10 @@ async function getPopularMovies() {
         {method: 'GET', headers: {accept: 'application/json'}}
     );
 
+    if (!response.ok) {
+        throw new Error('Failed to fetch movies');
+    }
+
     const data = await response.json();
     return data.results;
 }
@@ -14,6 +18,10 @@ async function searchMovies(query) {
     const response = await fetch(`${API_URL}/search/movie?api_key=${API_KEY}&query=${query}`,
         {method: 'GET', headers: {accept: 'application/json'}}
     );
+
+    if (!response.ok) {
+        throw new Error('Failed to search movies');
+    }
 
     const data = await response.json();
     return data.results;

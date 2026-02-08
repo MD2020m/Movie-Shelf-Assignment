@@ -1,7 +1,7 @@
 import {useState, useEffect } from 'react';
 import MovieGrid from '../components/MovieGrid';
 import { getPopularMovies } from '../services/movieService';
-
+import LoadingSpinner from '../components/LoadingSpinner';
 // Static movie data for template
 //const staticMovies = [
 //  {
@@ -52,17 +52,44 @@ import { getPopularMovies } from '../services/movieService';
 
 function Home({ searchResults }) {
   const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchMovies = async () => {
-      const movieData = await getPopularMovies();
-      setMovies(movieData);
+      try {
+        setLoading(true);
+        setError(null);
+        const movieData = await getPopularMovies();
+        setMovies(movieData);
+      } catch (err) {
+        setError('Failed to load movies. Please try again later.');
+        setMovies([]);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchMovies();
   }, []);
   
   const displayMovies = searchResults || movies;
+
+  if (loading) {
+    return (
+      <main className="main-content">
+        <LoadingSpinner />
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="main-content">
+        <ErrorMessage message={error} />
+      </main>
+    )
+  }
 
   return (
     <main className="main-content">
